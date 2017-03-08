@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">commUNITY</string>
+    <string name="facebook_app_id">756506647831411</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="add_a_tip">Add Tip</string>
+    <string name="developer_info">Created By Madhu</string>
+    <string name="logout">Log Out</string>
+    <string name="profile">Profile</string>
+    <string name="confirm_logout">Are you sure you want to log out?</string>
+    <string name="facebook_provider_id">facebook_provider_id</string>
+    <string name="incidents">Incidents</string>
+    <string name="incident_close_to_you">Reported Close To You</string>
+    <string name="name">Name</string>
+    <string name="email">Email</string>
+    <string name="action_save">Create Account</string>
+    <string name="hint_password">password</string>
+    <string name="sign_in">SIGN IN</string>
+    <string name="sign_up">SIGN UP</string>
+</resources>
