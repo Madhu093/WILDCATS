@@ -7,9 +7,9 @@ import com.google.firebase.database.Query;
  * Created by madhukurapati on 3/7/17.
  */
 
-public class RecentIncidentsFragment extends IncidentListFragment {
+public class AllIncidentsReportedFragment extends IncidentListFragment {
 
-    public RecentIncidentsFragment() {}
+    public AllIncidentsReportedFragment() {}
 
     @Override
     public Query getQuery(DatabaseReference databaseReference) {

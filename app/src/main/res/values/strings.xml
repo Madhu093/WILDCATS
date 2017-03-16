@@ -9,8 +9,8 @@
     <string name="profile">Profile</string>
     <string name="confirm_logout">Are you sure you want to log out?</string>
     <string name="facebook_provider_id">facebook_provider_id</string>
-    <string name="incidents">Incidents</string>
-    <string name="incident_close_to_you">Your Reports</string>
+    <string name="incidents">POSTS</string>
+    <string name="incident_close_to_you">YOUR POSTS</string>
     <string name="name">Name</string>
     <string name="email">Email</string>
     <string name="action_save">Create Account</string>
@@ -18,4 +18,6 @@
     <string name="sign_in">SIGN IN</string>
     <string name="sign_up">REGISTER</string>
     <string name="select_or_take_picture">Select or Take a picture</string>
+    <string name="add_posts">TELL US YOUR STORY</string>
+    <string name="no_posts_added_yet">You haven\'t shared your story yet !</string>
 </resources>

@@ -1,5 +1,7 @@
 package com.example.madhukurapati.staysafe.fragment;
 
+import android.widget.LinearLayout;
+
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
@@ -7,9 +9,9 @@ import com.google.firebase.database.Query;
  * Created by madhukurapati on 3/6/17.
  */
 
-public class IncidentsCloseToYouFragment extends IncidentListFragment {
+public class IncidentsReportedByYouFragment extends IncidentListFragment {
 
-    public IncidentsCloseToYouFragment() {}
+    public IncidentsReportedByYouFragment() {}
 
     @Override
     public Query getQuery(DatabaseReference databaseReference) {

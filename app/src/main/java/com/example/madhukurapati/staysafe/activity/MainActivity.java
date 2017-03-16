@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -19,18 +18,16 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.madhukurapati.staysafe.R;
-import com.example.madhukurapati.staysafe.fragment.IncidentsCloseToYouFragment;
-import com.example.madhukurapati.staysafe.fragment.RecentIncidentsFragment;
+import com.example.madhukurapati.staysafe.fragment.IncidentsReportedByYouFragment;
+import com.example.madhukurapati.staysafe.fragment.AllIncidentsReportedFragment;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.Auth;
@@ -123,8 +120,8 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         // Create the adapter that will return a fragment for each section
         mPagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
             private final Fragment[] mFragments = new Fragment[]{
-                    new RecentIncidentsFragment(),
-                    new IncidentsCloseToYouFragment(),
+                    new AllIncidentsReportedFragment(),
+                    new IncidentsReportedByYouFragment(),
             };
             private final String[] mFragmentNames = new String[]{
                     getString(R.string.incidents),
