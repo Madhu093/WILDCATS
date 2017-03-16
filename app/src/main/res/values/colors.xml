@@ -6,4 +6,13 @@
     <color name="colorCardDataBackground">#F0EFEA</color>
     <color name="colorActivityBackground">#F1F1F2</color>
     <color name="colorTabLayoutBackground">#FB6542</color>
+
+    <color name="darkish_grey">@color/gray_4a</color>
+    <color name="gray_4a">#4a4a4a</color>
+
+    <color name="gray_26">#262626</color>
+
+    <color name="light_gray">@color/gray_e5</color>
+    <color name="gray_e5">#E5E5E5</color>
+    <color name="backGroundColor">#F1F1F2</color>
 </resources>

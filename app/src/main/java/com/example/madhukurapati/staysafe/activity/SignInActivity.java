@@ -103,7 +103,6 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         // Initialize FirebaseAuth
         mFirebaseAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        mFirebaseUser = mFirebaseAuth.getCurrentUser();
 
         fbSignIn.setReadPermissions("email", "public_profile");
         fbSignIn.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -297,7 +296,8 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                 });
     }
 
-    private void onAuthSuccess(FirebaseUser user) {
+    public void onAuthSuccess(FirebaseUser user) {
+        mFirebaseUser = mFirebaseAuth.getCurrentUser();
         String userName = "";
         String emailId = "";
         if (mFirebaseUser != null) {
@@ -305,11 +305,11 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                 if (profile.getProviderId().equals(getString(R.string.facebook_provider_id))) {
                     userName = profile.getDisplayName();
                     emailId = profile.getEmail();
+                    Log.d(TAG, "onAuthSuccess: ");
                 } else {
                     userName = mFirebaseUser.getDisplayName();
                     emailId = mFirebaseUser.getEmail();
                     // Write new user
-
                 }
             }
         }

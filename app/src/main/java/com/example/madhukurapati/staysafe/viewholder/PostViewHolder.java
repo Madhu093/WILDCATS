@@ -7,6 +7,12 @@ import android.widget.TextView;
 
 import com.example.madhukurapati.staysafe.R;
 import com.example.madhukurapati.staysafe.models.Post;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
+import com.squareup.picasso.Picasso;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class PostViewHolder extends RecyclerView.ViewHolder {
 
@@ -15,6 +21,7 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
     public ImageView starView;
     public TextView numStarsView;
     public TextView bodyView;
+    public de.hdodenhof.circleimageview.CircleImageView authorImageView;
 
     public PostViewHolder(View itemView) {
         super(itemView);
@@ -24,6 +31,7 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
         starView = (ImageView) itemView.findViewById(R.id.star);
         numStarsView = (TextView) itemView.findViewById(R.id.post_num_stars);
         bodyView = (TextView) itemView.findViewById(R.id.post_body);
+        authorImageView = (de.hdodenhof.circleimageview.CircleImageView) itemView.findViewById(R.id.post_author_photo);
     }
 
     public void bindToPost(Post post, View.OnClickListener starClickListener) {
@@ -31,7 +39,6 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
         authorView.setText(post.author);
         numStarsView.setText(String.valueOf(post.starCount));
         bodyView.setText(post.body);
-
         starView.setOnClickListener(starClickListener);
     }
 }

@@ -2,15 +2,20 @@ package com.example.madhukurapati.staysafe.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,8 +50,10 @@ public class IncidentDetailActivity extends BaseActivity implements View.OnClick
     private TextView mBodyView;
     private EditText mCommentField;
     private Button mCommentButton;
+    private ImageView imageView;
     private RecyclerView mCommentsRecycler;
     private Button shareButton;
+    private String imageFromFirebase = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +79,7 @@ public class IncidentDetailActivity extends BaseActivity implements View.OnClick
         shareButton = (Button) findViewById(R.id.shareButton);
         mCommentField = (EditText) findViewById(R.id.field_comment_text);
         mCommentButton = (Button) findViewById(R.id.button_post_comment);
+        imageView = (ImageView) findViewById(R.id.imageView) ;
         mCommentsRecycler = (RecyclerView) findViewById(R.id.recycler_comments);
 
         mCommentButton.setOnClickListener(this);
@@ -84,6 +92,9 @@ public class IncidentDetailActivity extends BaseActivity implements View.OnClick
     public void onStart() {
         super.onStart();
 
+        //Hide keyboard on start
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
         // Add value event listener to the post
         // [START post_value_event_listener]
         ValueEventListener postListener = new ValueEventListener() {
@@ -95,6 +106,13 @@ public class IncidentDetailActivity extends BaseActivity implements View.OnClick
                 mAuthorView.setText(post.author);
                 mTitleView.setText(post.title);
                 mBodyView.setText(post.body);
+                Log.d(TAG, "onDataChange: "+ post.starCount);
+                if( post.getImageEncoded() != null  ) {
+                    imageFromFirebase = post.imageEncoded;
+                    decodeImageFromFirebase(imageFromFirebase);
+                }else {
+                    Toast.makeText(getApplicationContext(), "Default Image is loaded" ,Toast.LENGTH_SHORT).show();
+                }
                 // [END_EXCLUDE]
             }
 
@@ -117,6 +135,12 @@ public class IncidentDetailActivity extends BaseActivity implements View.OnClick
         // Listen for comments
         mAdapter = new CommentAdapter(this, mCommentsReference);
         mCommentsRecycler.setAdapter(mAdapter);
+    }
+
+    private void decodeImageFromFirebase(String image) {
+        byte[] decodeImage = Base64.decode(image,Base64.DEFAULT);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(decodeImage,0,decodeImage.length);
+        imageView.setImageBitmap(bitmap);
     }
 
     @Override

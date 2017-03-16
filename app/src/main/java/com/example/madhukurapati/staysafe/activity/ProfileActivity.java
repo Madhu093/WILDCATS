@@ -36,7 +36,7 @@ public class ProfileActivity extends AppCompatActivity {
         mPhoto = (ImageView) findViewById(R.id.mPhoto);
 
         if (mFirebaseUser == null) {
-
+            //Firebase user is null
         } else {
             String facebookUserId = "";
             String userName = "";

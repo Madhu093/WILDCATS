@@ -1,14 +1,26 @@
 package com.example.madhukurapati.staysafe.activity;
 
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.madhukurapati.staysafe.R;
+import com.example.madhukurapati.staysafe.fragment.ChooserDialogFragment;
 import com.example.madhukurapati.staysafe.models.Post;
 import com.example.madhukurapati.staysafe.models.User;
 import com.google.firebase.auth.FirebaseAuth;
@@ -19,6 +31,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,10 +39,11 @@ import java.util.Map;
  * Created by madhukurapati on 3/7/17.
  */
 
-public class NewIncidentActivity extends BaseActivity{
+public class NewIncidentActivity extends BaseActivity {
 
     private static final String TAG = "NewPostActivity";
     private static final String REQUIRED = "Required";
+    private static final int REQUEST_IMAGE_SELECT = 111;
 
     // [START declare_database_ref]
     private DatabaseReference mDatabase;
@@ -37,9 +51,12 @@ public class NewIncidentActivity extends BaseActivity{
 
     private EditText mTitleField;
     private EditText mBodyField;
-    private FloatingActionButton mSubmitButton;
+    private ImageView addImage;
+    private TextView imageLabel;
+    private Button submitButton;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
+    private String imageEncoded;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,14 +70,72 @@ public class NewIncidentActivity extends BaseActivity{
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         mTitleField = (EditText) findViewById(R.id.field_title);
         mBodyField = (EditText) findViewById(R.id.field_body);
-        mSubmitButton = (FloatingActionButton) findViewById(R.id.fab_submit_post);
+        addImage = (ImageView) findViewById(R.id.uploadImage);
+        imageLabel = (TextView) findViewById(R.id.imageLabel);
+        submitButton = (Button) findViewById(R.id.submit_button);
 
-        mSubmitButton.setOnClickListener(new View.OnClickListener() {
+        submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 submitPost();
             }
         });
+
+        addImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addImage();
+            }
+        });
+
+    }
+
+    private void addImage() {
+        ChooserDialogFragment fragment = new ChooserDialogFragment();
+        fragment.show(getSupportFragmentManager(), "ChooseCameraGallery");
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case 100:
+                if (resultCode == RESULT_OK) {
+                    Bundle extras = data.getExtras();
+                    Bitmap imageBitmap = (Bitmap) extras.get("data");
+                    imageLabel.setText("Image Captured");
+                    encodeBitmapAndSaveToFirebase(imageBitmap);
+                }
+
+                break;
+            case 101:
+                if (resultCode == RESULT_OK
+                        && null != data ) {
+                    Uri selectedImage = data.getData();
+                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
+
+                    Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+                    cursor.moveToFirst();
+
+                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                    String filePath = cursor.getString(columnIndex);
+                    cursor.close();
+                    Bitmap yourSelectedImage = BitmapFactory.decodeFile(filePath);
+                    imageLabel.setText("Image Selected From Storage");
+                    encodeBitmapAndSaveToFirebase(yourSelectedImage);
+                } else {
+                    Toast.makeText(this, "You haven't picked Image",
+                            Toast.LENGTH_LONG).show();
+                }
+                break;
+        }
+    }
+
+
+    public void encodeBitmapAndSaveToFirebase(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        imageEncoded = Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
     }
 
     private void submitPost() {
@@ -101,7 +176,12 @@ public class NewIncidentActivity extends BaseActivity{
                                     Toast.LENGTH_SHORT).show();
                         } else {
                             // Write new post
-                            writeNewPost(userId, user.username, title, body);
+                            // Body is required
+                            if (TextUtils.isEmpty(imageEncoded)) {
+                                writeNewPost(userId, user.username, title, body);
+                            } else {
+                                writeNewPostWithImage(userId, user.username, title, body, imageEncoded);
+                            }
                         }
 
                         // Finish this Activity, back to the stream
@@ -125,9 +205,9 @@ public class NewIncidentActivity extends BaseActivity{
         mTitleField.setEnabled(enabled);
         mBodyField.setEnabled(enabled);
         if (enabled) {
-            mSubmitButton.setVisibility(View.VISIBLE);
+            submitButton.setVisibility(View.VISIBLE);
         } else {
-            mSubmitButton.setVisibility(View.GONE);
+            submitButton.setVisibility(View.GONE);
         }
     }
 
@@ -137,6 +217,21 @@ public class NewIncidentActivity extends BaseActivity{
         // /posts/$postid simultaneously
         String key = mDatabase.child("posts").push().getKey();
         Post post = new Post(userId, username, title, body);
+        Map<String, Object> postValues = post.toMap();
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/posts/" + key, postValues);
+        childUpdates.put("/user-posts/" + userId + "/" + key, postValues);
+
+        mDatabase.updateChildren(childUpdates);
+    }
+
+    // [START write_fan_out]
+    private void writeNewPostWithImage(String userId, String username, String title, String body, String image) {
+        // Create new post at /user-posts/$userid/$postid and at
+        // /posts/$postid simultaneously
+        String key = mDatabase.child("posts").push().getKey();
+        Post post = new Post(userId, username, title, body, image);
         Map<String, Object> postValues = post.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();

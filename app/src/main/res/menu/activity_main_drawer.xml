@@ -4,13 +4,8 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/tip"
-            android:icon="@drawable/login_logo"
-            android:title="@string/add_a_tip" />
-
-        <item
             android:id="@+id/logout"
-            android:icon="@drawable/login_logo"
+            android:icon="@drawable/logout"
             android:title="@string/logout" />
 
     </group>

@@ -1,12 +1,17 @@
 package com.example.madhukurapati.staysafe.activity;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.GravityCompat;
@@ -14,12 +19,13 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.madhukurapati.staysafe.R;
@@ -38,6 +44,7 @@ import com.squareup.picasso.Picasso;
 
 public class MainActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener, NavigationView.OnNavigationItemSelectedListener {
 
+    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1500;
     private FirebaseAuth mFirebaseAuth;
     private String TAG = "MainActivity";
     private FirebaseUser mFirebaseUser;
@@ -62,6 +69,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
 
         initialize();
         setPager();
+        isStoragePermissionGranted();
 
         FacebookSdk.sdkInitialize(getApplicationContext());
         mFirebaseAuth = FirebaseAuth.getInstance();
@@ -81,6 +89,34 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
             return;
         }
 
+    }
+
+    public  boolean isStoragePermissionGranted() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                Log.v(TAG,"Permission is granted");
+                return true;
+            } else {
+
+                Log.v(TAG,"Permission is revoked");
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                return false;
+            }
+        }
+        else { //permission is automatically granted on sdk<23 upon installation
+            Log.v(TAG,"Permission is granted");
+            return true;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(grantResults[0]== PackageManager.PERMISSION_GRANTED){
+            Log.v(TAG,"Permission: "+permissions[0]+ "was "+grantResults[0]);
+            //resume tasks needing this permission
+        }
     }
 
     private void setPager() {
@@ -117,10 +153,28 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         tabLayout.setupWithViewPager(mViewPager);
 
         // Button launches NewPostActivity
-        findViewById(R.id.fab_new_post).setOnClickListener(new View.OnClickListener() {
+
+        findViewById(R.id.home).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, NewIncidentActivity.class));
+                return;
+            }
+        });
+
+        findViewById(R.id.add_story).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent launchMainActivity = new Intent(MainActivity.this, NewIncidentActivity.class);
+                startActivity(launchMainActivity);
+            }
+        });
+
+
+        findViewById(R.id.nearby).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent launchMainActivity = new Intent(MainActivity.this, LocationBasedIncidents.class);
+                startActivity(launchMainActivity);
             }
         });
     }
@@ -203,6 +257,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
 
             @Override
             public void onClick(View view) {
+                drawerLayout.closeDrawer(GravityCompat.START);
                 startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
 
             }
@@ -265,10 +320,6 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.tip:
-                drawerLayout.closeDrawer(GravityCompat.START);
-                return true;
-
             case R.id.logout:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle(R.string.app_name);
