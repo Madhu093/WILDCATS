@@ -15,6 +15,7 @@ public class Post {
     public String author;
     public String title;
     public String body;
+    public String profileImageEncoded;
     public int starCount = 0;
     public Map<String, Boolean> stars = new HashMap<>();
 
@@ -22,19 +23,21 @@ public class Post {
         // Default constructor required for calls to DataSnapshot.getValue(Post.class)
     }
 
-    public Post(String uid, String author, String title, String body) {
+    public Post(String uid, String author, String title, String body, String profileImageEncoded) {
         this.uid = uid;
         this.author = author;
         this.title = title;
         this.body = body;
+        this.profileImageEncoded = profileImageEncoded;
     }
 
-    public Post(String uid, String author, String title, String body, String imageEncoded) {
+    public Post(String uid, String author, String title, String body, String imageEncoded, String profileImageEncoded) {
         this.uid = uid;
         this.author = author;
         this.title = title;
         this.body = body;
         this.imageEncoded = imageEncoded;
+        this.profileImageEncoded = profileImageEncoded;
     }
 
     // [START post_to_map]
@@ -48,6 +51,7 @@ public class Post {
         result.put("body", body);
         result.put("starCount", starCount);
         result.put("stars", stars);
+        result.put("profileImage", profileImageEncoded);
         return result;
     }
 
@@ -97,6 +101,14 @@ public class Post {
 
     public void setStarCount(int starCount) {
         this.starCount = starCount;
+    }
+
+    public String getProfileImageEncoded() {
+        return profileImageEncoded;
+    }
+
+    public void setProfileImageEncoded(String profileImageEncoded) {
+        this.profileImageEncoded = profileImageEncoded;
     }
 
     public Map<String, Boolean> getStars() {

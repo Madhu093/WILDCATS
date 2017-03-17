@@ -25,6 +25,7 @@ import com.example.madhukurapati.staysafe.models.Post;
 import com.example.madhukurapati.staysafe.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,8 +33,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+
+import static android.R.attr.bitmap;
 
 /**
  * Created by madhukurapati on 3/7/17.
@@ -45,9 +50,7 @@ public class NewIncidentActivity extends BaseActivity {
     private static final String REQUIRED = "Required";
     private static final int REQUEST_IMAGE_SELECT = 111;
 
-    // [START declare_database_ref]
     private DatabaseReference mDatabase;
-    // [END declare_database_ref]
 
     private EditText mTitleField;
     private EditText mBodyField;
@@ -57,6 +60,8 @@ public class NewIncidentActivity extends BaseActivity {
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
     private String imageEncoded;
+    private String profileImageEncoded;
+    private String profilePhoto = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +86,8 @@ public class NewIncidentActivity extends BaseActivity {
             }
         });
 
+        getProfileImageAndStoreToFirebase();
+
         addImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,6 +96,35 @@ public class NewIncidentActivity extends BaseActivity {
         });
 
     }
+
+    private void getProfileImageAndStoreToFirebase() {
+        String facebookUserId = "";
+        for (UserInfo profile : mFirebaseUser.getProviderData()) {
+            if (profile.getProviderId().equals(getString(R.string.facebook_provider_id))) {
+                profilePhoto = "https://graph.facebook.com/" + facebookUserId + "/picture?type=large";
+            } else {
+                if (mFirebaseUser.getPhotoUrl() != null) {
+                    profilePhoto = mFirebaseUser.getPhotoUrl().toString();
+                } else {
+                    //If user logs in using signUp within app
+                }
+            }
+        }
+        try {
+            URL url = new URL(profilePhoto);
+            Bitmap image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+            encodeProfileBitmapAndSaveToFirebase(image);
+        } catch(IOException e) {
+            System.out.println(e);
+        }
+    }
+
+    public void encodeProfileBitmapAndSaveToFirebase(Bitmap bitmap) {
+        ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos2);
+        profileImageEncoded = Base64.encodeToString(baos2.toByteArray(), Base64.DEFAULT);
+    }
+
 
     private void addImage() {
         ChooserDialogFragment fragment = new ChooserDialogFragment();
@@ -110,7 +146,7 @@ public class NewIncidentActivity extends BaseActivity {
                 break;
             case 101:
                 if (resultCode == RESULT_OK
-                        && null != data ) {
+                        && null != data) {
                     Uri selectedImage = data.getData();
                     String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
@@ -178,9 +214,9 @@ public class NewIncidentActivity extends BaseActivity {
                             // Write new post
                             // Body is required
                             if (TextUtils.isEmpty(imageEncoded)) {
-                                writeNewPost(userId, user.username, title, body);
+                                writeNewPost(userId, user.username, title, body, profileImageEncoded);
                             } else {
-                                writeNewPostWithImage(userId, user.username, title, body, imageEncoded);
+                                writeNewPostWithImage(userId, user.username, title, body, imageEncoded, profileImageEncoded);
                             }
                         }
 
@@ -212,11 +248,11 @@ public class NewIncidentActivity extends BaseActivity {
     }
 
     // [START write_fan_out]
-    private void writeNewPost(String userId, String username, String title, String body) {
+    private void writeNewPost(String userId, String username, String title, String body, String profileImageEncoded) {
         // Create new post at /user-posts/$userid/$postid and at
         // /posts/$postid simultaneously
         String key = mDatabase.child("posts").push().getKey();
-        Post post = new Post(userId, username, title, body);
+        Post post = new Post(userId, username, title, body, profileImageEncoded);
         Map<String, Object> postValues = post.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();
@@ -227,11 +263,12 @@ public class NewIncidentActivity extends BaseActivity {
     }
 
     // [START write_fan_out]
-    private void writeNewPostWithImage(String userId, String username, String title, String body, String image) {
+    private void writeNewPostWithImage(String userId, String username, String title, String
+            body, String image, String profileImageEncoded) {
         // Create new post at /user-posts/$userid/$postid and at
         // /posts/$postid simultaneously
         String key = mDatabase.child("posts").push().getKey();
-        Post post = new Post(userId, username, title, body, image);
+        Post post = new Post(userId, username, title, body, image, profileImageEncoded);
         Map<String, Object> postValues = post.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();

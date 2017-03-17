@@ -6,6 +6,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.madhukurapati.staysafe.R;
+import com.example.madhukurapati.staysafe.activity.IncidentDetailActivity;
 import com.example.madhukurapati.staysafe.models.Post;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -39,6 +40,9 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
         authorView.setText(post.author);
         numStarsView.setText(String.valueOf(post.starCount));
         bodyView.setText(post.body);
+        if(post.profileImageEncoded != null) {
+            authorImageView.setImageBitmap(IncidentDetailActivity.decodeImageFromFirebase(post.profileImageEncoded));
+        }
         starView.setOnClickListener(starClickListener);
     }
 }

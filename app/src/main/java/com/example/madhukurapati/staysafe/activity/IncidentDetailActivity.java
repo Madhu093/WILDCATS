@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -50,10 +51,11 @@ public class IncidentDetailActivity extends BaseActivity implements View.OnClick
     private TextView mBodyView;
     private EditText mCommentField;
     private Button mCommentButton;
-    private ImageView imageView;
+    private ImageView imageView, authorProfilePic;
     private RecyclerView mCommentsRecycler;
     private Button shareButton;
     private String imageFromFirebase = "";
+    private String respectivePostAuthorProfilePic ="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,8 +82,8 @@ public class IncidentDetailActivity extends BaseActivity implements View.OnClick
         mCommentField = (EditText) findViewById(R.id.field_comment_text);
         mCommentButton = (Button) findViewById(R.id.button_post_comment);
         imageView = (ImageView) findViewById(R.id.imageView) ;
+        authorProfilePic = (ImageView) findViewById(R.id.post_author_photo) ;
         mCommentsRecycler = (RecyclerView) findViewById(R.id.recycler_comments);
-
         mCommentButton.setOnClickListener(this);
         shareButton.setOnClickListener(this);
         mCommentsRecycler.setLayoutManager(new LinearLayoutManager(this));
@@ -106,13 +108,20 @@ public class IncidentDetailActivity extends BaseActivity implements View.OnClick
                 mAuthorView.setText(post.author);
                 mTitleView.setText(post.title);
                 mBodyView.setText(post.body);
-                Log.d(TAG, "onDataChange: "+ post.starCount);
-                if( post.getImageEncoded() != null  ) {
+                if( post.imageEncoded != null  ) {
                     imageFromFirebase = post.imageEncoded;
-                    decodeImageFromFirebase(imageFromFirebase);
+                    imageView.setImageBitmap(decodeImageFromFirebase(imageFromFirebase));
                 }else {
                     Toast.makeText(getApplicationContext(), "Default Image is loaded" ,Toast.LENGTH_SHORT).show();
                 }
+
+                if( post.profileImageEncoded != null  ) {
+                    respectivePostAuthorProfilePic = post.profileImageEncoded;
+                    authorProfilePic.setImageBitmap(decodeImageFromFirebase(respectivePostAuthorProfilePic));
+                }else {
+                    Toast.makeText(getApplicationContext(), "Profile Image of post is default" ,Toast.LENGTH_SHORT).show();
+                }
+
                 // [END_EXCLUDE]
             }
 
@@ -137,10 +146,10 @@ public class IncidentDetailActivity extends BaseActivity implements View.OnClick
         mCommentsRecycler.setAdapter(mAdapter);
     }
 
-    private void decodeImageFromFirebase(String image) {
+    public static Bitmap decodeImageFromFirebase(String image) {
         byte[] decodeImage = Base64.decode(image,Base64.DEFAULT);
         Bitmap bitmap = BitmapFactory.decodeByteArray(decodeImage,0,decodeImage.length);
-        imageView.setImageBitmap(bitmap);
+        return bitmap;
     }
 
     @Override
@@ -160,7 +169,13 @@ public class IncidentDetailActivity extends BaseActivity implements View.OnClick
     public void onClick(View v) {
         int i = v.getId();
         if (i == R.id.button_post_comment) {
+            View view = this.getCurrentFocus();
+            if (view != null) {
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
             postComment();
+
         }
         if(i== R.id.shareButton){
             share();
