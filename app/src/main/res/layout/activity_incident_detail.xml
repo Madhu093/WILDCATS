@@ -26,33 +26,38 @@
                     layout="@layout/include_incident_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentStart="true"
                     android:layout_below="@+id/shareButton"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginTop="5dp" />
+                    android:layout_marginLeft="5dp" />
 
-                <include
-                    android:id="@+id/post_author_layout"
-                    layout="@layout/include_incident_author"
-                    android:layout_below="@+id/post_text_layout"
-                    android:layout_width="wrap_content"
+                <View
+                    android:id="@+id/line1"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_below="@+id/tvComments"
+                    android:background="@android:color/darker_gray" />
+
+                <TextView
+                    android:id="@+id/tvComments"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true" />
+                    android:text="@string/comments"
+                    android:layout_below="@+id/post_text_layout"
+                    android:gravity="center"/>
 
                 <Button
                     android:id="@+id/shareButton"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true"
-                    android:text="SHARE" />
-
+                    android:layout_height="40dp"
+                    android:gravity="center"
+                    android:text="@string/share" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/recycler_comments"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_below="@+id/post_author_layout"
+                    android:layout_below="@+id/line1"
                     tools:listitem="@layout/item_comment" />
 
             </RelativeLayout>
@@ -80,7 +85,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.8"
-                    android:hint="Write a comment..."
+                    android:hint="@string/write_a_comment"
                     android:maxLines="1" />
 
                 <Button
@@ -89,7 +94,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.2"
-                    android:text="Post" />
+                    android:text="@string/post" />
 
             </LinearLayout>
         </LinearLayout>

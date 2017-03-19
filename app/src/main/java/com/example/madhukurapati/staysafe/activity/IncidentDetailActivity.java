@@ -46,14 +46,13 @@ public class IncidentDetailActivity extends BaseActivity implements View.OnClick
     private String mPostKey;
     private CommentAdapter mAdapter;
 
-    private TextView mAuthorView;
     private TextView mTitleView;
     private TextView mBodyView;
     private EditText mCommentField;
     private Button mCommentButton;
-    private ImageView imageView, authorProfilePic;
+    private ImageView imageView;
     private RecyclerView mCommentsRecycler;
-    private Button shareButton;
+    private TextView shareButton;
     private String imageFromFirebase = "";
     private String respectivePostAuthorProfilePic ="";
 
@@ -75,14 +74,12 @@ public class IncidentDetailActivity extends BaseActivity implements View.OnClick
                 .child("post-comments").child(mPostKey);
 
         // Initialize Views
-        mAuthorView = (TextView) findViewById(R.id.post_author);
         mTitleView = (TextView) findViewById(R.id.post_title);
         mBodyView = (TextView) findViewById(R.id.post_body);
-        shareButton = (Button) findViewById(R.id.shareButton);
+        shareButton = (TextView) findViewById(R.id.shareButton);
         mCommentField = (EditText) findViewById(R.id.field_comment_text);
         mCommentButton = (Button) findViewById(R.id.button_post_comment);
         imageView = (ImageView) findViewById(R.id.imageView) ;
-        authorProfilePic = (ImageView) findViewById(R.id.post_author_photo) ;
         mCommentsRecycler = (RecyclerView) findViewById(R.id.recycler_comments);
         mCommentButton.setOnClickListener(this);
         shareButton.setOnClickListener(this);
@@ -105,7 +102,6 @@ public class IncidentDetailActivity extends BaseActivity implements View.OnClick
                 // Get Post object and use the values to update the UI
                 Post post = dataSnapshot.getValue(Post.class);
                 // [START_EXCLUDE]
-                mAuthorView.setText(post.author);
                 mTitleView.setText(post.title);
                 mBodyView.setText(post.body);
                 if( post.imageEncoded != null  ) {
@@ -114,15 +110,6 @@ public class IncidentDetailActivity extends BaseActivity implements View.OnClick
                 }else {
                     Toast.makeText(getApplicationContext(), "Default Image is loaded" ,Toast.LENGTH_SHORT).show();
                 }
-
-                if( post.profileImageEncoded != null  ) {
-                    respectivePostAuthorProfilePic = post.profileImageEncoded;
-                    authorProfilePic.setImageBitmap(decodeImageFromFirebase(respectivePostAuthorProfilePic));
-                }else {
-                    Toast.makeText(getApplicationContext(), "Profile Image of post is default" ,Toast.LENGTH_SHORT).show();
-                }
-
-                // [END_EXCLUDE]
             }
 
             @Override
