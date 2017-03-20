@@ -19,25 +19,29 @@ public class Post {
     public int starCount = 0;
     public Map<String, Boolean> stars = new HashMap<>();
 
+    public String cityAndState;
+
     public Post() {
         // Default constructor required for calls to DataSnapshot.getValue(Post.class)
     }
 
-    public Post(String uid, String author, String title, String body, String profileImageEncoded) {
+    public Post(String uid, String author, String title, String body, String profileImageEncoded, String cityAndState) {
         this.uid = uid;
         this.author = author;
         this.title = title;
         this.body = body;
         this.profileImageEncoded = profileImageEncoded;
+        this.cityAndState = cityAndState;
     }
 
-    public Post(String uid, String author, String title, String body, String imageEncoded, String profileImageEncoded) {
+    public Post(String uid, String author, String title, String body, String imageEncoded, String profileImageEncoded, String cityAndState) {
         this.uid = uid;
         this.author = author;
         this.title = title;
         this.body = body;
         this.imageEncoded = imageEncoded;
         this.profileImageEncoded = profileImageEncoded;
+        this.cityAndState = cityAndState;
     }
 
     // [START post_to_map]
@@ -52,6 +56,21 @@ public class Post {
         result.put("starCount", starCount);
         result.put("stars", stars);
         result.put("profileImage", profileImageEncoded);
+        result.put("cityAndState", cityAndState);
+        return result;
+    }
+
+    @Exclude
+    public Map<String, Object> toMapWithoutimageEncoded() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("uid", uid);
+        result.put("author", author);
+        result.put("title", title);
+        result.put("body", body);
+        result.put("starCount", starCount);
+        result.put("stars", stars);
+        result.put("profileImage", profileImageEncoded);
+        result.put("cityAndState", cityAndState);
         return result;
     }
 
@@ -75,8 +94,17 @@ public class Post {
         return author;
     }
 
+    public String getCityAndState() {
+        return cityAndState;
+    }
+
+    public void setCityAndState(String cityAndState) {
+        this.cityAndState = cityAndState;
+    }
+
     public void setAuthor(String author) {
         this.author = author;
+
     }
 
     public String getTitle() {

@@ -22,6 +22,7 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
     public ImageView starView;
     public TextView numStarsView;
     public TextView bodyView;
+    public TextView location;
     public de.hdodenhof.circleimageview.CircleImageView authorImageView;
 
     public PostViewHolder(View itemView) {
@@ -29,6 +30,7 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
 
         titleView = (TextView) itemView.findViewById(R.id.post_title);
         authorView = (TextView) itemView.findViewById(R.id.post_author);
+        location = (TextView) itemView.findViewById(R.id.location_name);
         starView = (ImageView) itemView.findViewById(R.id.star);
         numStarsView = (TextView) itemView.findViewById(R.id.post_num_stars);
         bodyView = (TextView) itemView.findViewById(R.id.post_body);
@@ -40,9 +42,7 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
         authorView.setText(post.author);
         numStarsView.setText(String.valueOf(post.starCount));
         bodyView.setText(post.body);
-        if(post.profileImageEncoded != null) {
-            authorImageView.setImageBitmap(IncidentDetailActivity.decodeImageFromFirebase(post.profileImageEncoded));
-        }
+        location.setText(post.cityAndState);
         starView.setOnClickListener(starClickListener);
     }
 }

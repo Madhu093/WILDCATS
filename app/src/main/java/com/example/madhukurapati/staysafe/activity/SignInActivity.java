@@ -128,15 +128,6 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     }
 
-    private void handleFirebaseAuthResult(AuthResult authResult) {
-        if (authResult != null) {
-            // Welcome the user
-            FirebaseUser user = authResult.getUser();
-            Toast.makeText(this, "Welcome " + user.getEmail(), Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(this, MainActivity.class));
-        }
-    }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {

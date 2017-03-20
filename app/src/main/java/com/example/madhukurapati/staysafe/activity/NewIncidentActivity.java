@@ -4,11 +4,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
@@ -21,8 +21,12 @@ import android.widget.Toast;
 
 import com.example.madhukurapati.staysafe.R;
 import com.example.madhukurapati.staysafe.fragment.ChooserDialogFragment;
+import com.example.madhukurapati.staysafe.models.Config;
+import com.example.madhukurapati.staysafe.models.LocationResponse;
 import com.example.madhukurapati.staysafe.models.Post;
 import com.example.madhukurapati.staysafe.models.User;
+import com.example.madhukurapati.staysafe.rest.ApiInterface;
+import com.example.madhukurapati.staysafe.rest.LocationClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
@@ -36,9 +40,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
-import static android.R.attr.bitmap;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by madhukurapati on 3/7/17.
@@ -62,6 +70,10 @@ public class NewIncidentActivity extends BaseActivity {
     private String imageEncoded;
     private String profileImageEncoded;
     private String profilePhoto = "";
+    private String location;
+
+    private Double lat;
+    private Double longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +109,7 @@ public class NewIncidentActivity extends BaseActivity {
 
     }
 
+
     private void getProfileImageAndStoreToFirebase() {
         String facebookUserId = "";
         for (UserInfo profile : mFirebaseUser.getProviderData()) {
@@ -114,7 +127,7 @@ public class NewIncidentActivity extends BaseActivity {
             URL url = new URL(profilePhoto);
             Bitmap image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
             encodeProfileBitmapAndSaveToFirebase(image);
-        } catch(IOException e) {
+        } catch (IOException e) {
             System.out.println(e);
         }
     }
@@ -194,47 +207,88 @@ public class NewIncidentActivity extends BaseActivity {
         setEditingEnabled(false);
         Toast.makeText(this, "Posting...", Toast.LENGTH_SHORT).show();
 
-        // [START single_value_read]
-        final String userId = getUid();
-        mDatabase.child("users").child(userId).addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        // Get user value
-                        User user = dataSnapshot.getValue(User.class);
+        //Location call starts
 
-                        // [START_EXCLUDE]
-                        if (user == null) {
-                            // User is null, error out
-                            Log.e(TAG, "User " + userId + " is unexpectedly null");
-                            Toast.makeText(NewIncidentActivity.this,
-                                    "Error: could not fetch user.",
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            // Write new post
-                            // Body is required
-                            if (TextUtils.isEmpty(imageEncoded)) {
-                                writeNewPost(userId, user.username, title, body, profileImageEncoded);
+        ApiInterface locationClient =
+                LocationClient.getClient().create(ApiInterface.class);
+
+        Call<LocationResponse> call = locationClient.getLocation(Config.GOOGLE_API_KEY);
+        call.enqueue(new Callback<LocationResponse>() {
+            @Override
+            public void onResponse(Call<LocationResponse> call, Response<LocationResponse> response) {
+                try {
+                    LocationResponse lr = response.body();
+                    lat = lr.getLocation().getLat();
+                    longitude = lr.getLocation().getLng();
+
+                    Geocoder geoCoder = new Geocoder(getBaseContext(), Locale.getDefault());
+                    try {
+                        if (lat != null & longitude != null) {
+                            List<Address> addresses = geoCoder.getFromLocation(lat, longitude, 1);
+
+                            if (addresses.size() > 0) {
+                                location = addresses.get(0).getLocality() + "," + addresses.get(0).getAdminArea();
+
+                                // [START single_value_read]
+                                final String userId = getUid();
+                                mDatabase.child("users").child(userId).addListenerForSingleValueEvent(
+                                        new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                // Get user value
+                                                User user = dataSnapshot.getValue(User.class);
+
+                                                // [START_EXCLUDE]
+                                                if (user == null) {
+                                                    // User is null, error out
+                                                    Log.e(TAG, "User " + userId + " is unexpectedly null");
+                                                    Toast.makeText(NewIncidentActivity.this,
+                                                            "Error: could not fetch user.",
+                                                            Toast.LENGTH_SHORT).show();
+                                                } else {
+                                                    // Write new post
+                                                    // Body is required
+                                                    if (TextUtils.isEmpty(imageEncoded)) {
+                                                        writeNewPost(userId, user.username, title, body, profileImageEncoded, location);
+                                                    } else {
+                                                        writeNewPostWithImage(userId, user.username, title, body, imageEncoded, profileImageEncoded, location);
+                                                    }
+                                                }
+
+                                                // Finish this Activity, back to the stream
+                                                setEditingEnabled(true);
+                                                finish();
+                                                // [END_EXCLUDE]
+                                            }
+
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+                                                Log.w(TAG, "getUser:onCancelled", databaseError.toException());
+                                                // [START_EXCLUDE]
+                                                setEditingEnabled(true);
+                                                // [END_EXCLUDE]
+                                            }
+                                        });
+                                // [END single_value_read]
                             } else {
-                                writeNewPostWithImage(userId, user.username, title, body, imageEncoded, profileImageEncoded);
+
                             }
+                        } else {
+                            System.out.println("Reverse geocoding failed on lat, long null values");
                         }
-
-                        // Finish this Activity, back to the stream
-                        setEditingEnabled(true);
-                        finish();
-                        // [END_EXCLUDE]
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
                     }
+                } catch (Exception e) {
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.w(TAG, "getUser:onCancelled", databaseError.toException());
-                        // [START_EXCLUDE]
-                        setEditingEnabled(true);
-                        // [END_EXCLUDE]
-                    }
-                });
-        // [END single_value_read]
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LocationResponse> call, Throwable t) {
+                System.out.println("response" + t);
+            }
+        });
     }
 
     private void setEditingEnabled(boolean enabled) {
@@ -248,12 +302,12 @@ public class NewIncidentActivity extends BaseActivity {
     }
 
     // [START write_fan_out]
-    private void writeNewPost(String userId, String username, String title, String body, String profileImageEncoded) {
+    private void writeNewPost(String userId, String username, String title, String body, String profileImageEncoded, String location) {
         // Create new post at /user-posts/$userid/$postid and at
         // /posts/$postid simultaneously
         String key = mDatabase.child("posts").push().getKey();
-        Post post = new Post(userId, username, title, body, profileImageEncoded);
-        Map<String, Object> postValues = post.toMap();
+        Post post = new Post(userId, username, title, body, profileImageEncoded, location);
+        Map<String, Object> postValues = post.toMapWithoutimageEncoded();
 
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put("/posts/" + key, postValues);
@@ -264,11 +318,11 @@ public class NewIncidentActivity extends BaseActivity {
 
     // [START write_fan_out]
     private void writeNewPostWithImage(String userId, String username, String title, String
-            body, String image, String profileImageEncoded) {
+            body, String image, String profileImageEncoded, String location) {
         // Create new post at /user-posts/$userid/$postid and at
         // /posts/$postid simultaneously
         String key = mDatabase.child("posts").push().getKey();
-        Post post = new Post(userId, username, title, body, image, profileImageEncoded);
+        Post post = new Post(userId, username, title, body, image, profileImageEncoded, location);
         Map<String, Object> postValues = post.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();
@@ -277,4 +331,5 @@ public class NewIncidentActivity extends BaseActivity {
 
         mDatabase.updateChildren(childUpdates);
     }
+
 }
