@@ -13,6 +13,8 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -79,7 +81,6 @@ public class NewIncidentActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_incident);
-
         // [START initialize_database_ref]
         mDatabase = FirebaseDatabase.getInstance().getReference();
         // [END initialize_database_ref]
@@ -90,6 +91,8 @@ public class NewIncidentActivity extends BaseActivity {
         addImage = (ImageView) findViewById(R.id.uploadImage);
         imageLabel = (TextView) findViewById(R.id.imageLabel);
         submitButton = (Button) findViewById(R.id.submit_button);
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -227,7 +230,7 @@ public class NewIncidentActivity extends BaseActivity {
                             List<Address> addresses = geoCoder.getFromLocation(lat, longitude, 1);
 
                             if (addresses.size() > 0) {
-                                location = addresses.get(0).getLocality() + "," + addresses.get(0).getAdminArea();
+                                location = addresses.get(0).getLocality();
 
                                 // [START single_value_read]
                                 final String userId = getUid();

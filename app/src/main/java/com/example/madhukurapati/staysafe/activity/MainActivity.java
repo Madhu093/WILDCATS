@@ -22,6 +22,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -148,32 +150,6 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         mViewPager.setAdapter(mPagerAdapter);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(mViewPager);
-
-        // Button launches NewPostActivity
-
-        findViewById(R.id.home).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                return;
-            }
-        });
-
-        findViewById(R.id.add_story).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent launchMainActivity = new Intent(MainActivity.this, NewIncidentActivity.class);
-                startActivity(launchMainActivity);
-            }
-        });
-
-
-        findViewById(R.id.nearby).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent launchMainActivity = new Intent(MainActivity.this, LocationBasedIncidents.class);
-                startActivity(launchMainActivity);
-            }
-        });
     }
 
     @Override
@@ -317,6 +293,16 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.add_story:
+                drawerLayout.closeDrawer(GravityCompat.START);
+                Intent launchMainActivity = new Intent(MainActivity.this, NewIncidentActivity.class);
+                startActivity(launchMainActivity);
+                return true;
+            case R.id.nearby:
+                drawerLayout.closeDrawer(GravityCompat.START);
+                Intent intent = new Intent(MainActivity.this, LocationBasedIncidents.class);
+                startActivity(intent);
+                return true;
             case R.id.logout:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle(R.string.app_name);

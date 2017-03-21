@@ -1,5 +1,6 @@
 package com.example.madhukurapati.staysafe.activity;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -54,13 +55,12 @@ public class IncidentDetailActivity extends BaseActivity implements View.OnClick
     private RecyclerView mCommentsRecycler;
     private TextView shareButton;
     private String imageFromFirebase = "";
-    private String respectivePostAuthorProfilePic ="";
+    private String respectivePostAuthorProfilePic = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_incident_detail);
-
         // Get post key from intent
         mPostKey = getIntent().getStringExtra(EXTRA_POST_KEY);
         if (mPostKey == null) {
@@ -79,7 +79,7 @@ public class IncidentDetailActivity extends BaseActivity implements View.OnClick
         shareButton = (TextView) findViewById(R.id.shareButton);
         mCommentField = (EditText) findViewById(R.id.field_comment_text);
         mCommentButton = (Button) findViewById(R.id.button_post_comment);
-        imageView = (ImageView) findViewById(R.id.imageView) ;
+        imageView = (ImageView) findViewById(R.id.imageView);
         mCommentsRecycler = (RecyclerView) findViewById(R.id.recycler_comments);
         mCommentButton.setOnClickListener(this);
         shareButton.setOnClickListener(this);
@@ -104,11 +104,9 @@ public class IncidentDetailActivity extends BaseActivity implements View.OnClick
                 // [START_EXCLUDE]
                 mTitleView.setText(post.title);
                 mBodyView.setText(post.body);
-                if( post.imageEncoded != null  ) {
+                if (post.imageEncoded != null) {
                     imageFromFirebase = post.imageEncoded;
                     imageView.setImageBitmap(decodeImageFromFirebase(imageFromFirebase));
-                }else {
-                    Toast.makeText(getApplicationContext(), "Default Image is loaded" ,Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -134,8 +132,8 @@ public class IncidentDetailActivity extends BaseActivity implements View.OnClick
     }
 
     public static Bitmap decodeImageFromFirebase(String image) {
-        byte[] decodeImage = Base64.decode(image,Base64.DEFAULT);
-        Bitmap bitmap = BitmapFactory.decodeByteArray(decodeImage,0,decodeImage.length);
+        byte[] decodeImage = Base64.decode(image, Base64.DEFAULT);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(decodeImage, 0, decodeImage.length);
         return bitmap;
     }
 
@@ -158,13 +156,13 @@ public class IncidentDetailActivity extends BaseActivity implements View.OnClick
         if (i == R.id.button_post_comment) {
             View view = this.getCurrentFocus();
             if (view != null) {
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
             postComment();
 
         }
-        if(i== R.id.shareButton){
+        if (i == R.id.shareButton) {
             share();
         }
     }
@@ -175,7 +173,7 @@ public class IncidentDetailActivity extends BaseActivity implements View.OnClick
         String shareBody = mBodyView.getText().toString();
         sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, mTitleView.getText().toString());
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
-        startActivityForResult(Intent.createChooser(sharingIntent, "Share via"),REQUEST_INVITE);
+        startActivityForResult(Intent.createChooser(sharingIntent, "Share via"), REQUEST_INVITE);
     }
 
     private void postComment() {

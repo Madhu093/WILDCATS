@@ -4,10 +4,17 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/add_story"
+            android:icon="@drawable/add_story"
+            android:title="@string/post" />
+        <item
+            android:id="@+id/nearby"
+            android:icon="@drawable/location"
+            android:title="@string/nearByPost" />
+        <item
             android:id="@+id/logout"
             android:icon="@drawable/logout"
             android:title="@string/logout" />
-
     </group>
 
 </menu>

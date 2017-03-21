@@ -20,8 +20,11 @@
     <string name="select_or_take_picture">Select or Take a picture</string>
     <string name="add_posts">TELL US YOUR STORY</string>
     <string name="no_posts_added_yet">You haven\'t shared your story yet !</string>
-    <string name="comments">Comments</string>
+    <string name="comments">COMMENTS:</string>
     <string name="share">share</string>
     <string name="write_a_comment">Write a comment...</string>
     <string name="post">Post</string>
+    <string name="nearByPost">Near By</string>
+    <string name="userName">First Last Name</string>
+    <string name="author_email">author@gmail.com</string>
 </resources>
