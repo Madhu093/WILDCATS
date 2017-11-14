@@ -6,14 +6,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.madhukurapati.staysafe.R;
-import com.example.madhukurapati.staysafe.activity.IncidentDetailActivity;
 import com.example.madhukurapati.staysafe.models.Post;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserInfo;
-import com.squareup.picasso.Picasso;
-
-import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class PostViewHolder extends RecyclerView.ViewHolder {
 

@@ -22,14 +22,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.madhukurapati.staysafe.R;
-import com.example.madhukurapati.staysafe.fragment.AllIncidentsReportedFragment;
-import com.example.madhukurapati.staysafe.fragment.IncidentsReportedByYouFragment;
+import com.example.madhukurapati.staysafe.fragment.AllPostedPostsFragment;
+import com.example.madhukurapati.staysafe.fragment.MyPostsFragment;
+import com.example.madhukurapati.staysafe.fragment.NeedRidesFragment;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.Auth;
@@ -42,7 +41,7 @@ import com.google.firebase.auth.UserInfo;
 import com.squareup.picasso.Picasso;
 
 public class MainActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener, NavigationView.OnNavigationItemSelectedListener {
-
+    private static final int REQUEST_INVITE = 500;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1500;
     private FirebaseAuth mFirebaseAuth;
     private String TAG = "MainActivity";
@@ -121,13 +120,13 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
     private void setPager() {
         // Create the adapter that will return a fragment for each section
         mPagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
-            private final Fragment[] mFragments = new Fragment[]{
-                    new AllIncidentsReportedFragment(),
-                    new IncidentsReportedByYouFragment(),
+            private final Fragment[] mFragments = new Fragment[]{new NeedRidesFragment(),
+                    new AllPostedPostsFragment(),
+                    new MyPostsFragment(),
             };
-            private final String[] mFragmentNames = new String[]{
-                    getString(R.string.incidents),
-                    getString(R.string.incident_close_to_you)
+            private final String[] mFragmentNames = new String[]{getString(R.string.Rides),
+                    getString(R.string.all_posts),
+                    getString(R.string.my_posts)
             };
 
             @Override
@@ -295,13 +294,20 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         switch (item.getItemId()) {
             case R.id.add_story:
                 drawerLayout.closeDrawer(GravityCompat.START);
-                Intent launchMainActivity = new Intent(MainActivity.this, NewIncidentActivity.class);
+                Intent launchMainActivity = new Intent(MainActivity.this, NewPostActivity.class);
                 startActivity(launchMainActivity);
                 return true;
-            case R.id.nearby:
+            case R.id.add_ride:
                 drawerLayout.closeDrawer(GravityCompat.START);
-                Intent intent = new Intent(MainActivity.this, LocationBasedIncidents.class);
-                startActivity(intent);
+                Intent launchNewRide = new Intent(MainActivity.this, NewPostActivity.class);
+                startActivity(launchNewRide);
+                return true;
+            case R.id.referToAFriend:
+                share();
+                drawerLayout.closeDrawer(GravityCompat.START);
+                return true;
+            case R.id.settings:
+                drawerLayout.closeDrawer(GravityCompat.START);
                 return true;
             case R.id.logout:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -337,5 +343,22 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         }
 
         return true;
+    }
+
+    private void share() {
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        String shareBody = "Download the app to stay in the race ";
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "WILD CATS");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+        startActivityForResult(Intent.createChooser(sharingIntent, "Share via"), REQUEST_INVITE);
+        sendToFirebaseAnalytics();
+    }
+
+    private void sendToFirebaseAnalytics() {
+        Bundle payload = new Bundle();
+        payload.putString(FirebaseAnalytics.Param.VALUE, "sent");
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SHARE,
+                payload);
     }
 }
