@@ -13,7 +13,6 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -54,7 +53,7 @@ import retrofit2.Response;
  * Created by madhukurapati on 3/7/17.
  */
 
-public class NewIncidentActivity extends BaseActivity {
+public class NewPostActivity extends BaseActivity {
 
     private static final String TAG = "NewPostActivity";
     private static final String REQUIRED = "Required";
@@ -80,7 +79,7 @@ public class NewIncidentActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_incident);
+        setContentView(R.layout.activity_new_post);
         // [START initialize_database_ref]
         mDatabase = FirebaseDatabase.getInstance().getReference();
         // [END initialize_database_ref]
@@ -184,9 +183,9 @@ public class NewIncidentActivity extends BaseActivity {
     }
 
 
-    public void encodeBitmapAndSaveToFirebase(Bitmap bitmap) {
+    public void encodeBitmapAndSaveToFirebase(Bitmap image) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        image.compress(Bitmap.CompressFormat.PNG, 100, baos);
         imageEncoded = Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
     }
 
@@ -216,15 +215,18 @@ public class NewIncidentActivity extends BaseActivity {
                 LocationClient.getClient().create(ApiInterface.class);
 
         Call<LocationResponse> call = locationClient.getLocation(Config.GOOGLE_API_KEY);
+        Log.d(TAG, "submitPost: ");
         call.enqueue(new Callback<LocationResponse>() {
             @Override
             public void onResponse(Call<LocationResponse> call, Response<LocationResponse> response) {
                 try {
+                    Log.d(TAG, "onResponse: + inside1");
                     LocationResponse lr = response.body();
                     lat = lr.getLocation().getLat();
                     longitude = lr.getLocation().getLng();
 
                     Geocoder geoCoder = new Geocoder(getBaseContext(), Locale.getDefault());
+                    Log.d(TAG, "onResponse: inside2");
                     try {
                         if (lat != null & longitude != null) {
                             List<Address> addresses = geoCoder.getFromLocation(lat, longitude, 1);
@@ -245,7 +247,7 @@ public class NewIncidentActivity extends BaseActivity {
                                                 if (user == null) {
                                                     // User is null, error out
                                                     Log.e(TAG, "User " + userId + " is unexpectedly null");
-                                                    Toast.makeText(NewIncidentActivity.this,
+                                                    Toast.makeText(NewPostActivity.this,
                                                             "Error: could not fetch user.",
                                                             Toast.LENGTH_SHORT).show();
                                                 } else {

@@ -68,6 +68,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     private EditText mPasswordField;
     private Button mSignInButton;
     private Button mSignUpButton;
+    String search  = "my.wilmi.edu";
 
 
     @Override
@@ -151,7 +152,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         }
     }
 
-    private void signIn() {
+    public void signIn() {
         Log.d(TAG, "signIn");
         if (!validateForm()) {
             return;
@@ -186,6 +187,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
         // Go to MainActivity
         startActivity(new Intent(SignInActivity.this, MainActivity.class));
+        //startActivity(new Intent(SignInActivity.this, DashboardActivity.class));
         finish();
     }
 

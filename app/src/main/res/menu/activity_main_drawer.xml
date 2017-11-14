@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/add_story"
             android:icon="@drawable/add_story"
             android:title="@string/post" />
+
         <item
-            android:id="@+id/nearby"
-            android:icon="@drawable/location"
-            android:title="@string/nearByPost" />
+            android:id="@+id/add_ride"
+            android:icon="@drawable/ic_directions_car_black_24dp"
+            android:title="@string/new_car" />
+
+        <item
+            android:id="@+id/referToAFriend"
+            android:icon="@drawable/ic_share_black_24dp"
+            android:title="@string/referToAFriend" />
+
+        <item
+            android:id="@+id/settings"
+            android:icon="@drawable/ic_settings_black_24dp"
+            android:title="@string/settings" />
+
         <item
             android:id="@+id/logout"
             android:icon="@drawable/logout"

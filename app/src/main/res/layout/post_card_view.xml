@@ -15,7 +15,7 @@
 
         <include
             android:id="@+id/post_author_layout"
-            layout="@layout/include_incident_author"
+            layout="@layout/include_post_author"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true" />
@@ -71,7 +71,7 @@
         </LinearLayout>
 
         <include
-            layout="@layout/include_incident_text"
+            layout="@layout/include_post_text"
             android:id="@+id/incident_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

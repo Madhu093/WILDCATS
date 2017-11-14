@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.madhukurapati.staysafe.R;
-import com.example.madhukurapati.staysafe.activity.IncidentDetailActivity;
+import com.example.madhukurapati.staysafe.activity.PostDetailActivity;
 import com.example.madhukurapati.staysafe.models.Post;
 import com.example.madhukurapati.staysafe.viewholder.PostViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -28,7 +28,7 @@ import com.google.firebase.database.Transaction;
  * Created by madhukurapati on 3/6/17.
  */
 
-public abstract class IncidentListFragment extends Fragment {
+public abstract class PostsListFragment extends Fragment {
 
     private static final String TAG = "PostListFragment";
 
@@ -40,13 +40,13 @@ public abstract class IncidentListFragment extends Fragment {
     private RecyclerView mRecycler;
     private LinearLayoutManager mManager;
 
-    public IncidentListFragment() {}
+    public PostsListFragment() {}
 
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container,
                               Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View rootView = inflater.inflate(R.layout.fragment_all_incidents, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_all_posts, container, false);
 
         // [START create_database_reference]
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -70,7 +70,7 @@ public abstract class IncidentListFragment extends Fragment {
 
         // Set up FirebaseRecyclerAdapter with the Query
         Query postsQuery = getQuery(mDatabase);
-        mAdapter = new FirebaseRecyclerAdapter<Post, PostViewHolder>(Post.class, R.layout.incident_card_view,
+        mAdapter = new FirebaseRecyclerAdapter<Post, PostViewHolder>(Post.class, R.layout.post_card_view,
                 PostViewHolder.class, postsQuery) {
             @Override
             protected void populateViewHolder(final PostViewHolder viewHolder, final Post model, final int position) {
@@ -82,8 +82,8 @@ public abstract class IncidentListFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         // Launch PostDetailActivity
-                        Intent intent = new Intent(getActivity(), IncidentDetailActivity.class);
-                        intent.putExtra(IncidentDetailActivity.EXTRA_POST_KEY, postKey);
+                        Intent intent = new Intent(getActivity(), PostDetailActivity.class);
+                        intent.putExtra(PostDetailActivity.EXTRA_POST_KEY, postKey);
                         startActivity(intent);
                     }
                 });

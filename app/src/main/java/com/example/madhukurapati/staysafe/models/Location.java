@@ -1,5 +1,6 @@
 package com.example.madhukurapati.staysafe.models;
 
+
 /**
  * Created by kurapma on 1/23/17.
  */
@@ -25,4 +26,7 @@ public class Location {
     public void setLat(Double lat) {
         this.lat = lat;
     }
+
+    //Details detailValues[] =new Details[100];
+
 }
