@@ -148,8 +148,12 @@ public class NewRideActivity extends BaseActivity {
                                                 } else {
                                                     // Write new post
                                                     // Body is required
-
-                                                    writeNewRide(userId, user.username, title, body, location);
+                                                    try {
+                                                        String capTitle = capitalize(title);
+                                                        writeNewRide(userId, user.username, capTitle, body, location);
+                                                    }catch (Exception e) {
+                                                        writeNewRide(userId, user.username, title, body, location);
+                                                    }
 
                                                 }
 
@@ -209,9 +213,13 @@ public class NewRideActivity extends BaseActivity {
 
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put("/rides/" + key, postValues);
-        childUpdates.put("/user-rides/" + userId + "/" + key, postValues);
+        childUpdates.put("/user-posts/" + userId + "/" + key, postValues);
 
         mDatabase.updateChildren(childUpdates);
+    }
+
+    private String capitalize(String line) {
+        return Character.toUpperCase(line.charAt(0)) + line.substring(1);
     }
 
 

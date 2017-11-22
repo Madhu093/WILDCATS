@@ -76,7 +76,7 @@ public class RideDetailActivity extends BaseActivity implements View.OnClickList
         // Initialize Views
         mTitleView = (TextView) findViewById(R.id.post_title);
         mBodyView = (TextView) findViewById(R.id.post_body);
-        mBodyView.setMaxLines(20);
+        mBodyView.setMaxLines(50);
         mBodyView.setEllipsize(null);
         mCommentField = (EditText) findViewById(R.id.ride_field_comment_text);
         mCommentButton = (Button) findViewById(R.id.ride_button_comment);

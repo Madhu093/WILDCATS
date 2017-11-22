@@ -254,9 +254,19 @@ public class NewPostActivity extends BaseActivity {
                                                     // Write new post
                                                     // Body is required
                                                     if (TextUtils.isEmpty(imageEncoded)) {
-                                                        writeNewPost(userId, user.username, title, body, profileImageEncoded, location);
+                                                        try {
+                                                            String capTitle = capitalize(title);
+                                                            writeNewPost(userId, user.username, capTitle, body, profileImageEncoded, location);
+                                                        } catch (Exception e) {
+                                                            writeNewPost(userId, user.username, title, body, profileImageEncoded, location);
+                                                        }
                                                     } else {
-                                                        writeNewPostWithImage(userId, user.username, title, body, imageEncoded, profileImageEncoded, location);
+                                                        try {
+                                                            String capTitle = capitalize(title);
+                                                            writeNewPostWithImage(userId, user.username, capTitle, body, imageEncoded, profileImageEncoded, location);
+                                                        } catch (Exception e) {
+                                                            writeNewPostWithImage(userId, user.username, title, body, imageEncoded, profileImageEncoded, location);
+                                                        }
                                                     }
                                                 }
 
@@ -335,6 +345,10 @@ public class NewPostActivity extends BaseActivity {
         childUpdates.put("/user-posts/" + userId + "/" + key, postValues);
 
         mDatabase.updateChildren(childUpdates);
+    }
+
+    private String capitalize(String line) {
+        return Character.toUpperCase(line.charAt(0)) + line.substring(1);
     }
 
 }
