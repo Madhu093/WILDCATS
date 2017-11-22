@@ -14,6 +14,7 @@
         android:maxLines="1"
         android:gravity="left"
         android:textStyle="bold"
+        android:autoLink="web"
         tools:text="My First Post" />
 
     <TextView
@@ -22,6 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         tools:text="EXAMPLE TEXT"
-        android:maxLines="5"/>
+        android:autoLink="web"
+        android:maxLines="6"/>
 
 </LinearLayout>
