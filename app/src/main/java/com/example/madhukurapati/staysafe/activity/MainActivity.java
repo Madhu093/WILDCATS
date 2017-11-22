@@ -28,7 +28,7 @@ import android.widget.TextView;
 import com.example.madhukurapati.staysafe.R;
 import com.example.madhukurapati.staysafe.fragment.AllPostedPostsFragment;
 import com.example.madhukurapati.staysafe.fragment.MyPostsFragment;
-import com.example.madhukurapati.staysafe.fragment.NeedRidesFragment;
+import com.example.madhukurapati.staysafe.fragment.RidesFragment;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.Auth;
@@ -39,6 +39,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.squareup.picasso.Picasso;
+import java.util.Locale;
 
 public class MainActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener, NavigationView.OnNavigationItemSelectedListener {
     private static final int REQUEST_INVITE = 500;
@@ -120,7 +121,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
     private void setPager() {
         // Create the adapter that will return a fragment for each section
         mPagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
-            private final Fragment[] mFragments = new Fragment[]{new NeedRidesFragment(),
+            private final Fragment[] mFragments = new Fragment[]{new RidesFragment(),
                     new AllPostedPostsFragment(),
                     new MyPostsFragment(),
             };
@@ -299,7 +300,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
                 return true;
             case R.id.add_ride:
                 drawerLayout.closeDrawer(GravityCompat.START);
-                Intent launchNewRide = new Intent(MainActivity.this, NewPostActivity.class);
+                Intent launchNewRide = new Intent(MainActivity.this, NewRideActivity.class);
                 startActivity(launchNewRide);
                 return true;
             case R.id.referToAFriend:

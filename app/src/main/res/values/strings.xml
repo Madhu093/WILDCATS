@@ -9,7 +9,7 @@
     <string name="profile">Profile</string>
     <string name="confirm_logout">Are you sure you want to log out?</string>
     <string name="facebook_provider_id">facebook_provider_id</string>
-    <string name="all_posts">POSTS</string>
+    <string name="all_posts">FEED</string>
     <string name="my_posts">MY POSTS</string>
     <string name="name">Name</string>
     <string name="email">Email</string>
@@ -24,7 +24,7 @@
     <string name="share">share</string>
     <string name="write_a_comment">Write a comment...</string>
     <string name="post">New Post</string>
-    <string name="referToAFriend">Share With Friends</string>
+    <string name="referToAFriend">Share</string>
     <string name="userName">First Last Name</string>
     <string name="author_email">author@gmail.com</string>
     <string name="Rides">RIDES</string>

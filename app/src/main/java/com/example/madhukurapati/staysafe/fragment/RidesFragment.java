@@ -14,16 +14,16 @@ import com.google.firebase.database.Query;
  * Created by madhukurapati on 11/12/17.
  */
 
-public class NeedRidesFragment extends PostsListFragment {
+public class RidesFragment extends RidesListFragment {
 
-    public NeedRidesFragment() {}
+    public RidesFragment() {}
 
     @Override
     public Query getQuery(DatabaseReference databaseReference) {
         // [START recent_posts_query]
         // Last 100 posts, these are automatically the 100 most recent
         // due to sorting by push() keys
-        Query recentPostsQuery = databaseReference.child("posts")
+        Query recentPostsQuery = databaseReference.child("rides")
                 .limitToFirst(100);
         // [END recent_posts_query]
 

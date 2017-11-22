@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.example.madhukurapati.staysafe.R;
 import com.example.madhukurapati.staysafe.models.Comment;
 import com.example.madhukurapati.staysafe.models.Post;
+import com.example.madhukurapati.staysafe.models.Ride;
 import com.example.madhukurapati.staysafe.models.User;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -34,56 +35,66 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PostDetailActivity extends BaseActivity implements View.OnClickListener {
+/**
+ * Created by madhukurapati on 11/20/17.
+ */
 
-    private static final String TAG = "PostDetailActivity";
+public class RideDetailActivity extends BaseActivity implements View.OnClickListener {
 
-    public static final String EXTRA_POST_KEY = "post_key";
+    private static final String TAG = "RideDetailActivity";
+
+    public static final String EXTRA_RIDE_KEY = "ride_key";
     private static final int REQUEST_INVITE = 500;
-    private DatabaseReference mPostReference;
+    private DatabaseReference mRideReference;
     private DatabaseReference mCommentsReference;
-    private ValueEventListener mPostListener;
-    private String mPostKey;
+    private ValueEventListener mRideListener;
+    private String mRideKey;
     private CommentAdapter mAdapter;
 
     private TextView mTitleView;
     private TextView mBodyView;
     private EditText mCommentField;
     private Button mCommentButton;
-    private ImageView imageView;
     private RecyclerView mCommentsRecycler;
-    private TextView shareButton;
-    private String imageFromFirebase = "";
-    private String respectivePostAuthorProfilePic = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_incident_detail);
+        setContentView(R.layout.activity_ride_details);
         // Get post key from intent
-        mPostKey = getIntent().getStringExtra(EXTRA_POST_KEY);
-        if (mPostKey == null) {
-            throw new IllegalArgumentException("Must pass EXTRA_POST_KEY");
+        mRideKey = getIntent().getStringExtra(EXTRA_RIDE_KEY);
+        if (mRideKey == null) {
+            throw new IllegalArgumentException("Must pass EXTRA_RIDE_KEY");
         }
 
         // Initialize Database
-        mPostReference = FirebaseDatabase.getInstance().getReference()
-                .child("posts").child(mPostKey);
+        mRideReference = FirebaseDatabase.getInstance().getReference()
+                .child("rides").child(mRideKey);
         mCommentsReference = FirebaseDatabase.getInstance().getReference()
-                .child("post-comments").child(mPostKey);
+                .child("rides-comments").child(mRideKey);
 
         // Initialize Views
         mTitleView = (TextView) findViewById(R.id.post_title);
         mBodyView = (TextView) findViewById(R.id.post_body);
-        mBodyView.setMaxLines(50);
+        mBodyView.setMaxLines(20);
         mBodyView.setEllipsize(null);
-        shareButton = (TextView) findViewById(R.id.shareButton);
-        mCommentField = (EditText) findViewById(R.id.field_comment_text);
-        mCommentButton = (Button) findViewById(R.id.button_post_comment);
-        imageView = (ImageView) findViewById(R.id.imageView);
-        mCommentsRecycler = (RecyclerView) findViewById(R.id.recycler_comments);
-        mCommentButton.setOnClickListener(this);
-        shareButton.setOnClickListener(this);
+        mCommentField = (EditText) findViewById(R.id.ride_field_comment_text);
+        mCommentButton = (Button) findViewById(R.id.ride_button_comment);
+        mCommentsRecycler = (RecyclerView) findViewById(R.id.ride_recycler_comments);
+        mCommentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: ");
+                if (v != null) {
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
+                Log.d(TAG, "onClick: after");
+                postComment();
+            }
+
+        });
+        //mCommentButton.setOnClickListener(this);
         mCommentsRecycler.setLayoutManager(new LinearLayoutManager(this));
 
     }
@@ -101,18 +112,14 @@ public class PostDetailActivity extends BaseActivity implements View.OnClickList
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Get Post object and use the values to update the UI
-                Post post = dataSnapshot.getValue(Post.class);
+                Ride ride = dataSnapshot.getValue(Ride.class);
                 // [START_EXCLUDE]
+
                 try {
-                    String title= capitalize(post.title);
+                    String title= capitalize(ride.title);
                     mTitleView.setText(title);
                 }catch (Exception e) {
-                    mTitleView.setText(post.title);
-                }
-                mBodyView.setText(post.body);
-                if (post.imageEncoded != null) {
-                    imageFromFirebase = post.imageEncoded;
-                    imageView.setImageBitmap(decodeImageFromFirebase(imageFromFirebase));
+                    mTitleView.setText(ride.title);
                 }
             }
 
@@ -121,26 +128,20 @@ public class PostDetailActivity extends BaseActivity implements View.OnClickList
                 // Getting Post failed, log a message
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
                 // [START_EXCLUDE]
-                Toast.makeText(PostDetailActivity.this, "Failed to load post.",
+                Toast.makeText(RideDetailActivity.this, "Failed to load post.",
                         Toast.LENGTH_SHORT).show();
                 // [END_EXCLUDE]
             }
         };
-        mPostReference.addValueEventListener(postListener);
+        mRideReference.addValueEventListener(postListener);
         // [END post_value_event_listener]
 
         // Keep copy of post listener so we can remove it when app stops
-        mPostListener = postListener;
+        mRideListener = postListener;
 
         // Listen for comments
         mAdapter = new CommentAdapter(this, mCommentsReference);
         mCommentsRecycler.setAdapter(mAdapter);
-    }
-
-    public static Bitmap decodeImageFromFirebase(String image) {
-        byte[] decodeImage = Base64.decode(image, Base64.DEFAULT);
-        Bitmap bitmap = BitmapFactory.decodeByteArray(decodeImage, 0, decodeImage.length);
-        return bitmap;
     }
 
     @Override
@@ -148,16 +149,16 @@ public class PostDetailActivity extends BaseActivity implements View.OnClickList
         super.onStop();
 
         // Remove post value event listener
-        if (mPostListener != null) {
-            mPostReference.removeEventListener(mPostListener);
+        if (mRideListener != null) {
+            mRideReference.removeEventListener(mRideListener);
         }
-
         // Clean up comments listener
         mAdapter.cleanupListener();
     }
 
     @Override
     public void onClick(View v) {
+        Log.d(TAG, "onClick: ");
         int i = v.getId();
         if (i == R.id.button_post_comment) {
             View view = this.getCurrentFocus();
@@ -165,32 +166,18 @@ public class PostDetailActivity extends BaseActivity implements View.OnClickList
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
+            Log.d(TAG, "onClick: after");
             postComment();
-
         }
-        if (i == R.id.shareButton) {
-            share();
-        }
-    }
-
-    private void share() {
-        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
-        sharingIntent.setType("text/plain");
-        String shareBody = mBodyView.getText().toString();
-        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, mTitleView.getText().toString());
-        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
-        startActivityForResult(Intent.createChooser(sharingIntent, "Share via"), REQUEST_INVITE);
     }
 
     private void postComment() {
         final String uid = getUid();
-        Log.d(TAG, "postComment: "+ uid);
         FirebaseDatabase.getInstance().getReference().child("users").child(uid)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         // Get user information
-                        Log.d(TAG, "onDataChange: ");
                         User user = dataSnapshot.getValue(User.class);
                         String authorName = user.username;
 

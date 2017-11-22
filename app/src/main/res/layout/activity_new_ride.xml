@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backGroundColor"
+    android:theme="@android:style/Theme.NoTitleBar"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/_ride_field_title"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="start|bottom"
+        android:hint="Enter Origin and Destination"
+        android:maxLines="1" />
+
+    <EditText
+        android:id="@+id/ride_field_body"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:gravity="start|top"
+        android:hint="Copy Share Directions From Google Maps"
+        android:inputType="textMultiLine"
+        android:maxLines="25"
+        android:scrollHorizontally="false"
+        android:scrollbars="vertical" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/ride_submit_button"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Submit" />
+
+    </LinearLayout>
+</LinearLayout>
