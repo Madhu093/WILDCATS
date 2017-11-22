@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.method.LinkMovementMethod;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -74,6 +75,7 @@ public class PostDetailActivity extends BaseActivity implements View.OnClickList
 
         // Initialize Views
         mTitleView = (TextView) findViewById(R.id.post_title);
+        mTitleView.setMaxLines(2);
         mBodyView = (TextView) findViewById(R.id.post_body);
         mBodyView.setMaxLines(50);
         mBodyView.setEllipsize(null);
@@ -103,12 +105,8 @@ public class PostDetailActivity extends BaseActivity implements View.OnClickList
                 // Get Post object and use the values to update the UI
                 Post post = dataSnapshot.getValue(Post.class);
                 // [START_EXCLUDE]
-                try {
-                    String title= capitalize(post.title);
-                    mTitleView.setText(title);
-                }catch (Exception e) {
-                    mTitleView.setText(post.title);
-                }
+
+                mTitleView.setText(post.title);
                 mBodyView.setText(post.body);
                 if (post.imageEncoded != null) {
                     imageFromFirebase = post.imageEncoded;
@@ -184,7 +182,7 @@ public class PostDetailActivity extends BaseActivity implements View.OnClickList
 
     private void postComment() {
         final String uid = getUid();
-        Log.d(TAG, "postComment: "+ uid);
+        Log.d(TAG, "postComment: " + uid);
         FirebaseDatabase.getInstance().getReference().child("users").child(uid)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override

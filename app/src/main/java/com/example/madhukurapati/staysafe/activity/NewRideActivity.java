@@ -213,7 +213,7 @@ public class NewRideActivity extends BaseActivity {
 
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put("/rides/" + key, postValues);
-        childUpdates.put("/user-posts/" + userId + "/" + key, postValues);
+        childUpdates.put("/user-rides/" + userId + "/" + key, postValues);
 
         mDatabase.updateChildren(childUpdates);
     }

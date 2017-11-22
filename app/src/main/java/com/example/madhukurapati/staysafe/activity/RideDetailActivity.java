@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.method.LinkMovementMethod;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -75,6 +76,7 @@ public class RideDetailActivity extends BaseActivity implements View.OnClickList
 
         // Initialize Views
         mTitleView = (TextView) findViewById(R.id.post_title);
+        mTitleView.setMaxLines(2);
         mBodyView = (TextView) findViewById(R.id.post_body);
         mBodyView.setMaxLines(50);
         mBodyView.setEllipsize(null);
@@ -115,12 +117,9 @@ public class RideDetailActivity extends BaseActivity implements View.OnClickList
                 Ride ride = dataSnapshot.getValue(Ride.class);
                 // [START_EXCLUDE]
 
-                try {
-                    String title= capitalize(ride.title);
-                    mTitleView.setText(title);
-                }catch (Exception e) {
-                    mTitleView.setText(ride.title);
-                }
+
+                mTitleView.setText(ride.title);
+                mBodyView.setText(ride.body);
             }
 
             @Override

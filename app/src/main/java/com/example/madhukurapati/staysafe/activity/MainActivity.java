@@ -28,6 +28,7 @@ import android.widget.TextView;
 import com.example.madhukurapati.staysafe.R;
 import com.example.madhukurapati.staysafe.fragment.AllPostedPostsFragment;
 import com.example.madhukurapati.staysafe.fragment.MyPostsFragment;
+import com.example.madhukurapati.staysafe.fragment.MyRidesFragment;
 import com.example.madhukurapati.staysafe.fragment.RidesFragment;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
@@ -123,11 +124,11 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         mPagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
             private final Fragment[] mFragments = new Fragment[]{new RidesFragment(),
                     new AllPostedPostsFragment(),
-                    new MyPostsFragment(),
+                    new MyPostsFragment(), new MyRidesFragment()
             };
             private final String[] mFragmentNames = new String[]{getString(R.string.Rides),
                     getString(R.string.all_posts),
-                    getString(R.string.my_posts)
+                    getString(R.string.my_posts),getString(R.string.my_rides)
             };
 
             @Override
